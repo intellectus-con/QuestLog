@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quest Log</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- App Header -->
+    <header class="app-header">
+      <h1>Quest Log</h1>
+      <div id="header-actions" class="header-actions">
+        <button id="back-to-main-btn" class="btn secondary back-btn hidden">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Main Menu
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-content">
+      <!-- Quest Log Selector (Main Menu) -->
+      <div id="quest-log-selector" class="view">
+        <div class="section-header">
+          <h2>Your Quest Logs</h2>
+          <div class="section-actions">
+            <button id="create-log-btn" class="btn primary">New Quest Log</button>
+            <button id="import-log-btn" class="btn secondary">Import</button>
+            <button id="browse-templates-btn" class="btn secondary">Templates</button>
+          </div>
+        </div>
+        
+        <div id="quest-logs-list" class="item-list">
+          <!-- Quest logs will be inserted here -->
+        </div>
+        
+        <!-- Create Quest Log Dialog -->
+        <div id="create-log-dialog" class="dialog hidden">
+          <div class="dialog-content">
+            <div class="dialog-header">
+              <h3>Create New Quest Log</h3>
+              <button id="create-log-close" class="btn-icon close-btn">×</button>
+            </div>
+            <div class="dialog-body">
+              <div class="form-group">
+                <label for="new-log-name">Name</label>
+                <input type="text" id="new-log-name" placeholder="Enter quest log name" class="text-input">
+              </div>
+            </div>
+            <div class="dialog-footer">
+              <button id="create-log-cancel" class="btn secondary">Cancel</button>
+              <button id="create-log-submit" class="btn primary">Create</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import Quest Log Dialog -->
+        <div id="import-log-dialog" class="dialog hidden">
+          <div class="dialog-content">
+            <div class="dialog-header">
+              <h3>Import Quest Log</h3>
+              <button id="import-log-close" class="btn-icon close-btn">×</button>
+            </div>
+            <div class="dialog-body">
+              <p class="dialog-description">Select a .quest file to import:</p>
+              <input type="file" id="import-file-input" accept=".quest" class="file-input">
+            </div>
+            <div class="dialog-footer">
+              <button id="import-log-cancel" class="btn secondary">Cancel</button>
+              <button id="import-log-submit" class="btn primary">Import</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Browse Templates Dialog -->
+        <div id="templates-dialog" class="dialog hidden">
+          <div class="dialog-content">
+            <div class="dialog-header">
+              <h3>Quest Templates</h3>
+              <button id="templates-close" class="btn-icon close-btn">×</button>
+            </div>
+            <div class="dialog-body">
+              <div id="templates-list" class="item-list">
+                <!-- Templates will be loaded here -->
+                <div class="loading-indicator">Loading templates...</div>
+              </div>
+            </div>
+            <div class="dialog-footer">
+              <button id="templates-cancel" class="btn secondary">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quest Log View -->
+      <div id="quest-log-view" class="view hidden">
+        <div class="two-column-layout">
+          <!-- Quest List (Left Side) -->
+          <div class="sidebar">
+            <div class="section-header">
+              <h2 id="current-log-name">Quest Log</h2>
+              <div class="section-actions">
+                <button id="add-quest-btn" class="btn primary">New Quest</button>
+                <div class="dropdown">
+                  <button class="btn secondary dropdown-toggle">Actions</button>
+                  <div class="dropdown-menu">
+                    <button id="sort-quests-btn" class="dropdown-item">Sort Quests</button>
+                    <button id="export-log-btn" class="dropdown-item">Export</button>
+                    <button id="delete-log-btn" class="dropdown-item danger">Delete Log</button>
+                    <button id="back-to-logs-btn" class="dropdown-item">Back to Logs</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="search-container">
+              <input type="text" id="search-quests" class="text-input search-input" placeholder="Search quests...">
+            </div>
+            <div id="quests-list" class="item-list">
+              <!-- Quests will be inserted here -->
+            </div>
+          </div>
+
+          <!-- Quest Details (Right Side) -->
+          <div class="main-content">
+            <div id="quest-details" class="quest-details hidden">
+              <div class="quest-header">
+                <h2 id="quest-title" class="quest-title">Quest Title</h2>
+                <div class="quest-actions">
+                  <button id="edit-quest-btn" class="btn secondary">Edit</button>
+                  <button id="delete-quest-btn" class="btn danger">Delete</button>
+                </div>
+              </div>
+              <div id="quest-description" class="quest-description">
+                <!-- Quest description will be inserted here -->
+              </div>
+              <div class="objectives-header">
+                <h3>Objectives</h3>
+                <div class="progress-indicator">
+                  <span id="objectives-progress">0/0</span> completed
+                </div>
+              </div>
+              <ul id="objectives-list" class="objectives-list">
+                <!-- Objectives will be inserted here -->
+              </ul>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state">
+              <div class="empty-state-content">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <p>Select a quest to view details</p>
+              </div>
+            </div>
+
+            <!-- Add Quest Form -->
+            <div id="add-quest-form" class="add-quest-form hidden">
+              <div class="form-header">
+                <h2>Add New Quest</h2>
+                <button id="cancel-quest-btn" class="btn-icon close-btn">×</button>
+              </div>
+              <div class="form-body">
+                <div class="form-group">
+                  <label for="quest-title-input">Quest Title</label>
+                  <input type="text" id="quest-title-input" class="text-input" placeholder="Enter quest title">
+                </div>
+                <div class="form-group">
+                  <label for="quest-description-input">Quest Description</label>
+                  <textarea id="quest-description-input" class="text-area" placeholder="Enter quest description"></textarea>
+                </div>
+                <div class="form-group">
+                  <div class="form-group-header">
+                    <label>Objectives</label>
+                    <button id="add-objective-btn" class="btn small">Add Objective</button>
+                  </div>
+                  <div id="objectives-container" class="objectives-container">
+                    <div class="objective-input-item">
+                      <input type="text" class="text-input objective-title" placeholder="Objective title">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-footer">
+                <button id="save-quest-btn" class="btn primary">Save Quest</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Quest Form -->
+      <div id="edit-quest-form" class="add-quest-form hidden">
+        <div class="form-header">
+          <h2>Edit Quest</h2>
+          <button id="cancel-edit-btn" class="btn-icon close-btn">×</button>
+        </div>
+        <div class="form-body">
+          <div class="form-group">
+            <label for="edit-quest-title-input">Quest Title</label>
+            <input type="text" id="edit-quest-title-input" class="text-input" placeholder="Enter quest title">
+          </div>
+          <div class="form-group">
+            <label for="edit-quest-description-input">Quest Description</label>
+            <textarea id="edit-quest-description-input" class="text-area" placeholder="Enter quest description"></textarea>
+          </div>
+          <div class="form-group">
+            <div class="form-group-header">
+              <label>Objectives</label>
+              <button id="edit-add-objective-btn" class="btn small">Add Objective</button>
+            </div>
+            <div id="edit-objectives-container" class="objectives-container">
+              <!-- Objectives will be added here -->
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button id="save-edit-btn" class="btn primary">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Confirmation Dialog -->
+      <div id="confirm-dialog" class="dialog hidden">
+        <div class="dialog-content">
+          <div class="dialog-header">
+            <h3 id="confirm-title">Confirm Action</h3>
+            <button id="confirm-close" class="btn-icon close-btn">×</button>
+          </div>
+          <div class="dialog-body">
+            <p id="confirm-message">Are you sure you want to proceed?</p>
+          </div>
+          <div class="dialog-footer">
+            <button id="confirm-cancel" class="btn secondary">Cancel</button>
+            <button id="confirm-ok" class="btn danger">Confirm</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sort Dialog -->
+      <div id="sort-dialog" class="dialog hidden">
+        <div class="dialog-content">
+          <div class="dialog-header">
+            <h3>Sort Quests</h3>
+            <button id="sort-close" class="btn-icon close-btn">×</button>
+          </div>
+          <div class="dialog-body">
+            <div class="form-group">
+              <label>Sort by</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="sort-by" value="title" checked>
+                  Title
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="sort-by" value="created">
+                  Date Created
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="sort-by" value="updated">
+                  Date Updated
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="sort-by" value="progress">
+                  Progress
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Order</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="sort-order" value="asc" checked>
+                  Ascending
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="sort-order" value="desc">
+                  Descending
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="dialog-footer">
+            <button id="sort-cancel" class="btn secondary">Cancel</button>
+            <button id="sort-apply" class="btn primary">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification -->
+      <div id="notification" class="notification hidden">
+        <div class="notification-content">
+          <span id="notification-message"></span>
+          <button class="btn-icon notification-close">×</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <span id="save-status">All changes saved</span>
+        <span id="current-date"></span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
